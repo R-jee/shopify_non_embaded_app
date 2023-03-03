@@ -15,5 +15,6 @@ class ConfigurationController extends Controller
         catch(Exception $e){
             return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
         }
+
     }
 }
