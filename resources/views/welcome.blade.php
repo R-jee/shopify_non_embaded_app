@@ -63,8 +63,6 @@
                 <a href="https://github.com/osiset/laravel-shopify" target="_blank">Package</a>
                 <a href="https://laravel.com" target="_blank">Laravel</a>
                 <a href="https://github.com/osiset/laravel-shopify" target="_blank">GitHub</a>
-                <a href="{{ route('check.setup.status') }}" target="_blank">Setup Status</a>
-                <a href="{{ url('/proxy2') }}" target="_blank">Setup Status 2</a>
             </div>
         </div>
     </div>

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppProxyController;
 use App\Http\Controllers\WebhookJobsController;
+use App\Http\Controllers\ConfigurationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -35,19 +36,17 @@ Route::get('refresh-migrate', function () {
     return "Migrated is fresh created";
 });
 
-
-Route::get('/', function () { return view('welcome'); })->middleware(['auth.shopify'])->name('home');
-
 Route::middleware(['auth.shopify'])->group(function () {
-    Route::get('/', function () { return view('welcome'); })->name('home');
+
+    Route::get('', [WebhookJobsController::class, 'checkWebHooks'])->name('setup.webhook'); // # ->middleware(['custom.billable']);
+
+    Route::get('configuration', [ConfigurationController::class, 'index'])->name('configuration'); // # ->middleware(['custom.billable']);
     Route::get('create-webhooks', [WebhookJobsController::class, 'createAllWebhooks'])->name('create_webhooks');
     Route::get('get-webhooks', [WebhookJobsController::class, 'getAllWebhooks'])->name('get_webhooks');
 
-
 });
 
-Route::get('/proxy/1', [AppProxyController::class, 'index'])->name('proxy')->middleware('auth.proxy');
-Route::get('/proxy/check-setup-status', [AppProxyController::class, 'checkSetupStatus'])->name('check.setup.status')->middleware(['auth.proxy']);
+Route::get('/proxy/check-status', function (\http\Env\Request $request) { return dd($request); })->name('check.SetupStatus')->middleware(['auth.proxy']);
 
 
 
