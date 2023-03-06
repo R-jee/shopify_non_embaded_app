@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppProxyController;
 use App\Http\Controllers\WebhooksController;
 use App\Http\Controllers\ConfigurationController;
-use \Exception;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
