@@ -38,12 +38,13 @@ Route::get('refresh-migrate', function () {
 
 Route::middleware(['auth.shopify'])->group(function () {
 
+    Route::get('/checkSetupStatus', [ConfigurationController::class, 'checkSetupStatus'])->name('check.SetupStatus');
     Route::get('/', [WebhookJobsController::class, 'checkWebHooks'])->name('home'); // # ->middleware(['custom.billable']);
     Route::get('/login', function () { return view('login'); })->name('login');
     Route::get('/configuration', [ConfigurationController::class, 'index'])->name('configuration'); // # ->middleware(['custom.billable']);
     Route::get('/create-webhooks', [WebhookJobsController::class, 'createAllWebhooks'])->name('create_webhooks');
     Route::get('/get-webhooks', [WebhookJobsController::class, 'getAllWebhooks'])->name('get_webhooks');
-
+    Route::get('enable_module', [ConfigurationController::class, 'enableModule'])->name('enable_module');
 
 });
 
