@@ -307,12 +307,12 @@ return [
     'webhooks' => [
 
         [
-            'topic' => env('SHOPIFY_WEBHOOK_1_TOPIC', 'APP_UNINSTALLED'), // APP_UNISTALLED  ===>  "app/uninstalled"
-            'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS', env('APP_URL') .'/webhook/app-uninstalled')
+            'topic' => env('SHOPIFY_WEBHOOK_1_TOPIC'), // APP_UNISTALLED  ===>  "app/uninstalled"
+            'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS')
         ],
         [
-            'topic' => env('SHOPIFY_WEBHOOK_2_TOPIC', 'PRODUCTS_CREATE'), // PRODUCTS_CREATE  ===>  "products/create"
-            'address' => env('SHOPIFY_WEBHOOK_2_ADDRESS', env('APP_URL') .'/webhook/products-create')
+            'topic' => env('SHOPIFY_WEBHOOK_2_TOPIC'), // PRODUCTS_CREATE  ===>  "products/create"
+            'address' => env('SHOPIFY_WEBHOOK_2_ADDRESS')
         ],
         /*
             [
