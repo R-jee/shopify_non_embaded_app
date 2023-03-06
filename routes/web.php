@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AppProxyController;
 use App\Http\Controllers\WebhooksController;
 use App\Http\Controllers\ConfigurationController;
+use \Exception;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,22 +19,37 @@ use App\Http\Controllers\ConfigurationController;
 Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
 
 Route::get('clear-cache', function () {
-    Artisan::call('cache:clear');
-    Artisan::call('route:clear');
-    Artisan::call('config:clear');
-    return "Cache is cleared";
+    try {
+        Artisan::call('cache:clear');
+        Artisan::call('route:clear');
+        Artisan::call('config:clear');
+        return "Cache is cleared";
+    }catch(Exception $e){
+        return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+    }
+
 });
-Route::get('clear-cache', function () {
-    Artisan::call('optimize:clear');
-    return "Cache is Optimized!";
+Route::get('optimize', function () {
+    try {
+        Artisan::call('optimize');
+        return "Cache is Optimized!";
+    }
+    catch(Exception $e){
+        return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+    }
 });
 Route::get('fresh-migrate', function () {
     Artisan::call('migrate:fresh');
     return "Migrated is fresh created";
 });
 Route::get('refresh-migrate', function () {
-    Artisan::call('migrate:refresh');
-    return "Migrated is fresh created";
+    try {
+        Artisan::call('migrate:refresh');
+        return "Migrated is fresh created";
+    }
+    catch(Exception $e){
+        return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+    }
 });
 
 Route::middleware(['auth.shopify'])->group(function () {
