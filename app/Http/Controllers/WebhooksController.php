@@ -62,7 +62,7 @@ class WebhooksController extends Controller
                     }
                 } else {
                     if ($configuration['webhook_status'] == 0) {
-                        $this->Create_allWebHooks($request);
+                        $this->createAllWebhooks($request);
                         $edit_config = Configuration::where('shop_url',  $domain)->first();
                         $edit_config->webhook_status = 1;
                         if ($edit_config->update()) {
