@@ -17,7 +17,7 @@ use stdClass;
 /**
  * Webhook job responsible for handling when the app is uninstalled.
  */
-class AppUninstalledJob implements ShouldQueue
+class appUninstalledJob implements ShouldQueue
 {
     use Dispatchable ,InteractsWithQueue ,Queueable ,SerializesModels;
 
