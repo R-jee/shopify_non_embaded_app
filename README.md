@@ -68,7 +68,7 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://cdn.shopify.com/shopifycloud/brochure/assets/brand-assets/shopify-partners-logo-4805ccbfba350cbe454866db370be0d361f65528a1d09c57b1d395e274c37e43.svg" width="400"></a></p>
 
 
-# Shopify-App-Creation-Guide
+# Shopify-App-Creation-Guide  
 -follow these instructions for more details ---> https://github.com/gnikyt/laravel-shopify/wiki/
 Shopify App Creation Guide
 
@@ -85,11 +85,11 @@ Shopify App Creation Guide
 - 4: php artisan vendor:publish --tag=shopify-config
 - 5: https://(your-domain).com/ ( Your app dir URL )
 - 6: https://(your-domain).com/authenticate ( in app create section add Rediect's URL )
-- 7: edit file ---> routes/web.php and modify the default route
+- 7: edit file ---> routes/web.php and modify the default route 
   ```
   Route::get('/', function () { return view('welcome'); })->middleware(['verify.shopify'])->name('home');
   ```
-- 8: Modify file --->  resources/views/welcome.blade.php
+- 8: Modify file --->  resources/views/welcome.blade.php 
 
   ```
   @extends('shopify-app::layouts.default')
@@ -104,28 +104,28 @@ Shopify App Creation Guide
       </script>
   @endsection
   ```
-
+  
 - 9: Edit file ---> app/User.php or app/Models/User.php
-
+  
   ```
   use Osiset\ShopifyApp\Contracts\ShopModel as IShopModel;
   use Osiset\ShopifyApp\Traits\ShopModel;
   class User extends Authenticatable implements IShopModel
   use ShopModel;
   ```
-
-- 10: For 16.*
+  
+- 10: For 16.* 
   ```
   package use --->  ( auth.shopify  )
   ```
 ####                           OR
-- 10: For 17.*
+- 10: For 17.* 
   ```
   package use --->  ( verify.shopify  )
   ```
-
+  
 - 11:  handle missing domainName exception  goto ---> app\Exceptions\Handler.php  & paste this code their
-
+  
   ```
   public function render($request, Throwable $exception){
         if( $exception instanceof \Osiset\ShopifyApp\Exceptions\MissingShopDomainException ){
@@ -135,8 +135,8 @@ Shopify App Creation Guide
   }
   ```
 
-- 12: Create login view ( login.blade.php )
-
+- 12: Create login view ( login.blade.php ) 
+  
   ```
   <form class="row g-4" action="{{ url('/authenticate') }}" method="GET">
      <div class="input-group mb-3">
@@ -146,17 +146,17 @@ Shopify App Creation Guide
   </form>
   ```
 
-- 13: For Non-embaded app do
+- 13: For Non-embaded app do 
   ```
   'appbridge_enabled' => (bool) env('SHOPIFY_APPBRIDGE_ENABLED', false)
   ```
 ####                          OR
-- 13: For Embaded app do
+- 13: For Embaded app do 
 ```
 'appbridge_enabled' => (bool) env('SHOPIFY_APPBRIDGE_ENABLED', true)
 ```
 
-- 14: For creating webHooks  {
+- 14: For creating webHooks  {  
   ```
   php artisan shopify-app:make:webhook [name] [topic]
   / for valid topics --->  
@@ -165,9 +165,10 @@ Shopify App Creation Guide
   ###              EXAMPLE ::-->   php artisan shopify-app:make:webhook OrdersCreateJob orders/create
 
 - 15: After create webHook we have to config it in {   config/shopify-app.php  } File.
-  LIKE :: -->
-
+    LIKE :: -->  
+    
     ```
+        You must create webhookController.php file to bind the webhooks function 
         /*
         |--------------------------------------------------------------------------
         | Shopify Webhooks
@@ -203,46 +204,46 @@ Shopify App Creation Guide
 
      ```
 
-### Using REST API's Link  ```  https://github.com/gnikyt/laravel-shopify/wiki/Usage#accessing-api-for-the-current-shop  ```
-- // Underlying API package (osiset/basic-shopify-api)
-  ```
-    $shop = Auth::user();
-    $shop->api()->rest(...);
-    $shop->api()->graph(...);
-    Example:
-  ```
-  ```
-    $shop = Auth::user();
-    $request = $shop->api()->rest('GET', '/admin/shop.json');
-    // $request = $shop->api()->graph('{ shop { name } }');
-    echo $request['body']['shop']['name'];
-  ```
-- Example with parameters:
-  ```
-     $shop = Auth::user();
-     $request = $shop->api()->rest('GET', '/admin/api/customers/search.json', ['query' => "phone:{$phone}"]);
-     echo $request['body']['customers'];
-  ```
-- Example POST with payload:
-   ```
-     $shop = Auth::user();
-     $request = $shop->api()->rest('POST', '/admin/api/customers/customer.json', ['customer' => "phone:{$phone}"]);
-     echo $request['body']['customers'];
-   ```
-- Accessing Shop's plan charge
-  For single/recurring/credit type charges, you can access them via the Charge model's retrieve method for charges which exist in the database for a shop.
-  --Example:
-  ```
-     use Osiset\ShopifyApp\Services\ChargeHelper;
+### Using REST API's Link  ```  https://github.com/gnikyt/laravel-shopify/wiki/Usage#accessing-api-for-the-current-shop  ```      
+  - // Underlying API package (osiset/basic-shopify-api)
+    ```
+      $shop = Auth::user();
+      $shop->api()->rest(...);
+      $shop->api()->graph(...);
+      Example:
+    ```
+    ```
+      $shop = Auth::user();
+      $request = $shop->api()->rest('GET', '/admin/shop.json');
+      // $request = $shop->api()->graph('{ shop { name } }');
+      echo $request['body']['shop']['name'];
+    ```
+   - Example with parameters:
+     ```
+        $shop = Auth::user();
+        $request = $shop->api()->rest('GET', '/admin/api/customers/search.json', ['query' => "phone:{$phone}"]);
+        echo $request['body']['customers'];
+     ```
+   - Example POST with payload:
+      ```
+        $shop = Auth::user();
+        $request = $shop->api()->rest('POST', '/admin/api/customers/customer.json', ['customer' => "phone:{$phone}"]);
+        echo $request['body']['customers'];
+      ```
+   - Accessing Shop's plan charge
+        For single/recurring/credit type charges, you can access them via the Charge model's retrieve method for charges which exist in the database for a shop.
+        --Example:
+     ```
+        use Osiset\ShopifyApp\Services\ChargeHelper;
 
-     $shop = Auth::user();
-     $chargeHelper = app()->make(ChargeHelper::class);
-     $charge = $chargeHelper->chargeForPlan($shop->plan->getId(), $shop);
-     $chargeApi = $chargeHelper->useCharge($charge->getReference())->retrieve(); 
-  ```  
+        $shop = Auth::user();
+        $chargeHelper = app()->make(ChargeHelper::class);
+        $charge = $chargeHelper->chargeForPlan($shop->plan->getId(), $shop);
+        $chargeApi = $chargeHelper->useCharge($charge->getReference())->retrieve(); 
+     ```  
 
-- 16: Change it in .env file like this
-  LIKE :: -->
+- 16: Change it in .env file like this 
+    LIKE :: -->  
     ```
       SHOPIFY_WEBHOOK_1_TOPIC=orders/create
       SHOPIFY_WEBHOOK_1_ADDRESS="${APP_URL}/webhook/orders-create"
@@ -251,10 +252,10 @@ Shopify App Creation Guide
     ```
 
 - 17:  ADD  Shopify scopes in the scope in .env file  {  https://shopify.dev/api/usage/access-scopes   }
-  LIKE :: -->
-
+    LIKE :: -->  
+                             
 - 18: Create an web Route to clear cache  in database for webhooks    {  https://shopify.dev/api/admin-rest/2022-04/resources/webhook   }
-  LIKE::-->
+    LIKE::--> 
     ```
        Route::get('clear-cache', function () {
            Artisan::call('cache:clear');
@@ -271,9 +272,9 @@ Shopify App Creation Guide
            return "Migrated is fresh created";
        });
     ```
-
+    
 - 19:  Add Laravel logs Viewer package to view errors in detailed UI   {  https://github.com/R-jee/laravel-log-viewer  }
-  LIKE::-->
+    LIKE::-->   
     ```
        Install via composer
                  composer require rap2hpoutre/laravel-log-viewer
@@ -282,7 +283,7 @@ Shopify App Creation Guide
        Add a route in your web routes file:
                  Route::get('logs', [\Rap2hpoutre\LaravelLogViewer\LogViewerController::class, 'index']);
     ```
-
+    
 - 20:    Log::info($input);
 
 - 21:    php artisan make:model --migration --controller webhookJobs
@@ -355,7 +356,7 @@ Shopify App Creation Guide
 
 - 24 :  php artisan make:middleware CustomBillable
 
-- 25:
+- 25:  
   ```
     <?php
       namespace App\Http\Middleware;
@@ -385,13 +386,13 @@ Shopify App Creation Guide
           }
       }
   ```
-
-  ### ADD  middleware in  Kernel.php file at  last
+  
+  ### ADD  middleware in  Kernel.php file at  last 
   ```
     'custom.billable' => \Illuminate\Auth\Middleware\CustomBillable::class,
   ```
-
-- 26:
+  
+- 26:    
   ```
     <div class="bottom">
          <a href="{{ route('billing', ['plan' => $plans[0]->id ]) }}">Buy Now</a>
@@ -405,7 +406,7 @@ Shopify App Creation Guide
     </div>
   ```
 
-- 27 :
+- 27 :  
   ```
     Route::get('/free-plan', function(){
         User::where('id' , auth()->user()->id )->update(
@@ -417,7 +418,7 @@ Shopify App Creation Guide
         return redirect()->route('home');
     })->name('free.plan');  
   ```
-
+  
 - 28:  App proxy in app
   ```
     Route::get('checkSetupStatus', 'CartButtonhiderDetailController@checkSetupStatus')->name('check.SetupStatus')->middleware(['auth.proxy']);
@@ -430,9 +431,9 @@ Shopify App Creation Guide
             }
         }
   ```
-
+  
 ### After Authentication Job -->
-- php artisan make:job AfterAuthenticateJob
+  - php artisan make:job AfterAuthenticateJob
 
 ### If you want to update the password of your user using the shopify API please try to use the below code:-
 ```
@@ -458,7 +459,7 @@ $updateCustomer = $shopify("PUT /admin/customers/$userId.json" , $updatePassword
     }
   }
 ```
-### JS Shopify Login
+### JS Shopify Login 
 
   ```
     var url = decodeURI(window.location.toString());     // This part is not correct
@@ -539,11 +540,11 @@ $updateCustomer = $shopify("PUT /admin/customers/$userId.json" , $updatePassword
   ```
 
 
-## Enable Billing Process
+## Enable Billing Process 
 
--add custome billable middleware in Middleware folder  --->  ( `CustomBillable.php` )
-```
-namespace App\Http\Middleware;
+ -add custome billable middleware in Middleware folder  --->  ( `CustomBillable.php` )
+    ```
+       namespace App\Http\Middleware;
 
        use Closure;
        use Illuminate\Support\Facades\Config;
@@ -575,15 +576,15 @@ namespace App\Http\Middleware;
 
     ```
 
--add custome billable middleware in Kernal   --->  ( `app\Http\kernal.php` )
-```
-'custom.billable' => \App\Http\Middleware\CustomBillable::class,
-```
+ -add custome billable middleware in Kernal   --->  ( `app\Http\kernal.php` )
+    ```
+       'custom.billable' => \App\Http\Middleware\CustomBillable::class,
+    ```
 
--add custome billable view   --->  ( `billing.blade.php` )
-```
-//  write your code here
-
+ -add custome billable view   --->  ( `billing.blade.php` )
+    ```
+       //  write your code here
+       
 
       <div class="container">
           <h1>Choose Your Perfect Plan</h1>
@@ -830,8 +831,8 @@ namespace App\Http\Middleware;
        
        
     ```
-
--add custome billable middleware in Middleware folder  --->  ( `CustomBillable.php` )
+ 
+  -add custome billable middleware in Middleware folder  --->  ( `CustomBillable.php` )
 
      ```
         Route::middleware(['auth.shopify'])->group(function(){
@@ -909,19 +910,19 @@ namespace App\Http\Middleware;
  });
 ```
 -- add these in .env file
-SHOPIFY_APPBRIDGE_ENABLED=true
-SHOPIFY_BILLING_ENABLED=1
+ SHOPIFY_APPBRIDGE_ENABLED=true
+ SHOPIFY_BILLING_ENABLED=1
 
 ### InvalidArgumentException
---Can only instantiate this object with a string.
---https://linkify.console.autooutletllc.com/billing/1
-
+   --Can only instantiate this object with a string.
+     --https://linkify.console.autooutletllc.com/billing/1
+ 
          ```
           // use it in plans blade view
             <a href="{{ route('billing', ['plan' => $plans[1]->id, 'shop' => $user->name ] ) }}?shop={{ $user->name }}">Buy Now</a>
 
          ```
-
+         
 ### Cancel Change & remove previous change
    ```
        $shop = Auth::user();
@@ -935,7 +936,7 @@ SHOPIFY_BILLING_ENABLED=1
             );
    ```
 
-### Free Plan Active function
+### Free Plan Active function 
    ```
       public function freePlan( Request $request, IShopCommand $shopCommand , IShopQuery $shopQuery, CancelCurrentPlan $cancelCurrentPlanAction ){
         header('Access-Control-Allow-Origin: *');
@@ -975,8 +976,8 @@ SHOPIFY_BILLING_ENABLED=1
         // return $this->index($request);
     }
    ```
-
-### Get Charge Status
+   
+### Get Charge Status 
 
  ```
   use Osiset\ShopifyApp\Services\ChargeHelper;
@@ -1007,9 +1008,9 @@ SHOPIFY_BILLING_ENABLED=1
     // Now you can access `$chargeData['status']` to check its status and control your flow
   }
  ```
-
+  
 ### Bypass Charge Plan for payment
-- go to --> vendor\osiset\laravel-shopify\src\Http\Middleware\VerifyShopify.php file & comment out this line on line number #96
+   - go to --> vendor\osiset\laravel-shopify\src\Http\Middleware\VerifyShopify.php file & comment out this line on line number #96
    ```
         // Verify the HMAC (if available)
         $hmacResult = $this->verifyHmac($request);
@@ -1021,7 +1022,7 @@ SHOPIFY_BILLING_ENABLED=1
 
 
 ## {{  --CREATE SHOPIFY APP EXTENSION USING CLI ---   }}
-https://magecomp.com/blog/create-theme-app-extension-shopify/
+  https://magecomp.com/blog/create-theme-app-extension-shopify/
 
 - 1:  install gem  --> https://rubyinstaller.org/downloads/
 - 2: install  git  -->  https://git-scm.com/downloads/
@@ -1130,7 +1131,7 @@ https://magecomp.com/blog/create-theme-app-extension-shopify/
     }
 ```
 
-###  Get All webhooks
+  ###  Get All webhooks
   ```
     public function getWebHooks__all(){
         $shop = auth()->user();
@@ -1390,3 +1391,4 @@ public function Reset__shopify_ScriptTags($shop , $version){
         }
     }
 ```
+

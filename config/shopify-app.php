@@ -137,7 +137,7 @@ return [
     |
     */
 
-    'api_version' => env('SHOPIFY_API_VERSION', '2020-01'),
+    'api_version' => env('SHOPIFY_API_VERSION', '2023-01'),
 
     /*
     |--------------------------------------------------------------------------
@@ -307,12 +307,12 @@ return [
     'webhooks' => [
 
         [
-            'topic' => env('SHOPIFY_WEBHOOK_1_TOPIC', 'APP_UNINSTALLED'), // APP_UNISTALLED  ===>  "app/uninstalled"
-            'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS', env('APP_URL') .'/webhook/app-uninstalled')
+            'topic' => env('SHOPIFY_WEBHOOK_1_TOPIC'), // APP_UNISTALLED  ===>  "app/uninstalled"
+            'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS')
         ],
         [
-            'topic' => env('SHOPIFY_WEBHOOK_2_TOPIC', 'PRODUCTS_CREATE'), // PRODUCTS_CREATE  ===>  "products/create"
-            'address' => env('SHOPIFY_WEBHOOK_2_ADDRESS', env('APP_URL') .'/webhook/products-create')
+            'topic' => env('SHOPIFY_WEBHOOK_2_TOPIC'), // PRODUCTS_CREATE  ===>  "products/create"
+            'address' => env('SHOPIFY_WEBHOOK_2_ADDRESS')
         ],
         /*
             [
@@ -334,7 +334,7 @@ return [
 
     'scripttags' => [
         [
-            'src' => env('SHOPIFY_SCRIPTTAG_1_SRC', 'https://some-app.com/some-controller/js-method-response'),
+            'src' => env('SHOPIFY_SCRIPTTAG_1_SRC'),
             'event' => env('SHOPIFY_SCRIPTTAG_1_EVENT', 'onload'),
             'display_scope' => env('SHOPIFY_SCRIPTTAG_1_DISPLAY_SCOPE', 'online_store')
         ]
