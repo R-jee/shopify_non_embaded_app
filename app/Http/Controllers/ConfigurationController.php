@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Configuration;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse as RedirectResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth as Auth;
 use Illuminate\Support\Facades\DB as DB;
@@ -21,20 +21,12 @@ class ConfigurationController extends Controller
     {
         try{
             if( Auth::user() ){
-                //return dd($request);
                 $shop = Auth::user();
                 $domain = $shop->getDomain()->toNative();
                 $configuration = Configuration::where('shop_url', $domain)->first();
                 $userSelected_Plan = $this->userSelectedPlan($request);
                 return view('configuration')->with(
-                    array_merge($request->input(),
-                        [
-                            'user_plan' => $userSelected_Plan,
-                            'configuration' => $configuration,
-                            'shop' => $domain,
-                            'request' => $request
-                        ]
-                    )
+                    array_merge($request->input(), [ 'user_plan' => $userSelected_Plan, 'configuration' => $configuration, 'shop' => $domain, 'request' => $request ])
                 );
             }
             return "";

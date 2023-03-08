@@ -79,7 +79,7 @@ Route::middleware(['auth.shopify'])->group(function () {
     Route::get('create-webhooks', [WebhooksController::class, 'createAllWebhooks'])->name('create_webhooks');
     Route::get('get-webhooks', [WebhooksController::class, 'getAllWebhooks'])->name('get_webhooks');
     Route::get('enable_module', [ConfigurationController::class, 'enableModule'])->name('enable_module');
-    // Route::get('/billing/{plan?}',BillingController::class.'@index')->middleware(['verify.shopify'])->where('plan', '^([0-9]+|)$')->name(Util::getShopifyConfig('route_names.billing'));
+    // Route::get('/billing/{plan?}',BillingController::class.'index')->middleware(['verify.shopify'])->where('plan', '^([0-9]+|)$')->name(Util::getShopifyConfig('route_names.billing'));
     // to show all billing plans
     Route::get('plans', [ConfigurationController::class, 'getAllPlans'])->name('plans');
     // to get free plan
