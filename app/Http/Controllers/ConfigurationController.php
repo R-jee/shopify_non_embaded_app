@@ -148,26 +148,30 @@ class ConfigurationController extends Controller
      */
     public function userSelectedPlan(Request $request)
     {
-
-        if( Auth::user() ){
-            if( Auth::user()->shopify_freemium == 1 ){
-                $shop = Auth::user()->shop;
-                return view('liquid.active_plan')->with(['shop'=> $shop , 'activePlan' => null ])->render();
-            }else{
-                $shop = Auth::user()->shop;
-                $plan_id = Auth::user()->plan_id;
-                if( !empty($plan_id)  ){
-                    $config = Configuration::where('shop_url', $shop)->where('');
-                    $plan = DB::table('charges')->where('plan_id', $plan_id)->where('user_id', Auth::user()->id )->where('status', "ACTIVE")->first();
-                    if( $plan ){
-                        return view('liquid.active_plan')->with(['shop'=> $shop , 'activePlan' => $plan ])->render();
-                    }
+        try{
+            if( Auth::user() ){
+                if( Auth::user()->shopify_freemium == 1 ){
+                    $shop = Auth::user()->shop;
+                    return view('liquid.active_plan')->with(['shop'=> $shop , 'activePlan' => null ])->render();
                 }else{
-                    return "";
+                    $shop = Auth::user()->shop;
+                    $plan_id = Auth::user()->plan_id;
+                    if( !empty($plan_id)  ){
+                        $config = Configuration::where('shop_url', $shop)->where('');
+                        $plan = DB::table('charges')->where('plan_id', $plan_id)->where('user_id', Auth::user()->id )->where('status', "ACTIVE")->first();
+                        if( $plan ){
+                            return view('liquid.active_plan')->with(['shop'=> $shop , 'activePlan' => $plan ])->render();
+                        }
+                    }else{
+                        return "";
+                    }
                 }
             }
+            return '';
         }
-        return '';
+        catch (\Exception $e){
+            return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+        }
     }
 
 
