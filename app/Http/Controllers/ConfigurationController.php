@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth as Auth;
 use Illuminate\Support\Facades\DB as DB;
 use Osiset\ShopifyApp\Actions\CancelCurrentPlan as CancelCurrentPlan;
 use Osiset\ShopifyApp\Storage\Commands\Shop as IShopCommand;
-use Osiset\ShopifyApp\Storage\Models\Plan as Plan;
+use Osiset\ShopifyApp\Storage\Models\Plan;
 use Osiset\ShopifyApp\Storage\Queries\Shop as IShopQuery;
 
 
