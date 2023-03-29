@@ -64,7 +64,6 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
 
-
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://cdn.shopify.com/shopifycloud/brochure/assets/brand-assets/shopify-partners-logo-4805ccbfba350cbe454866db370be0d361f65528a1d09c57b1d395e274c37e43.svg" width="400"></a></p>
 
 
@@ -156,7 +155,9 @@ Shopify App Creation Guide
 'appbridge_enabled' => (bool) env('SHOPIFY_APPBRIDGE_ENABLED', true)
 ```
 
-- 14: For creating webHooks  {
+- 14: For creating webHooks  {  
+  Version 16 used the resource/event format for topic. Version 17 uses the RESOURCE_EVENT format for topic. When upgrading to version 17, make sure to change all of your registered webhooks!
+
   ```
   php artisan shopify-app:make:webhook [name] [topic]
   / for valid topics --->  
@@ -168,6 +169,7 @@ Shopify App Creation Guide
   LIKE :: -->
 
     ```
+        You must create webhookController.php file to bind the webhooks function 
         /*
         |--------------------------------------------------------------------------
         | Shopify Webhooks
@@ -201,6 +203,103 @@ Shopify App Creation Guide
         'address' => env('SHOPIFY_WEBHOOK_1_ADDRESS', 'https://some-app.com/webhook/products-create')
       ],
 
+      ```
+        Route::get('/create-webhooks', [WebhookJobsController::class, 'createAllWebhooks'])->name('create_webhooks');
+        Route::get('/get-webhooks', [WebhookJobsController::class, 'getAllWebhooks'])->name('get_webhooks');
+      ```
+###### Add it in WebhookJobsController.php controller file
+
+     ```
+     
+      <?php
+
+        namespace App\Http\Controllers;
+        
+        use Illuminate\Http\Request;
+        
+        class WebhookJobsController extends Controller
+        {
+            //
+            public function createAllWebhooks(Request $request)
+            {
+            try{
+            $shop = Auth::user();
+            $domain = $shop->getDomain()->toNative();
+            $configuration = Configuration::where('shop_url', $domain)->first();
+            //return $request->input();
+            //die();
+            $webhook_array = array(
+            "webhook" => array(
+            "topic"   => "app/uninstalled",
+            "address" =>  env('APP_URL') . "/webhook/app-uninstalled",
+            "format"  => "json"
+            )
+            );
+            $webhook_result = $shop->api()->rest('POST', '/admin/api/'. env('SHOPIFY_API_VERSION') .'/webhooks.json', $webhook_array );
+            $webhook_array = array(
+            "webhook" => array(
+            "topic"   => "products/create",
+            "address" =>  env('APP_URL') . "/webhook/products-create",
+            "format"  => "json"
+            )
+            );
+            $webhook_result = $shop->api()->rest('POST', '/admin/api/'. env('SHOPIFY_API_VERSION') .'/webhooks.json', $webhook_array );
+    
+                info('Webhooks Created.');
+                return redirect()->route('configuration' , array_merge($request->input(), ['request' => $request , 'shop' => $domain]) );
+    
+            }
+            catch(Exception $e){
+                return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+            }
+        }
+    
+        public function checkWebHooks(Request $request)
+        {
+            try{
+                if (isset(auth()->user()->name)) {
+                    $shop = Auth::user();
+                    $domain = $shop->getDomain()->toNative();
+                    $configuration = Configuration::where('shop_url', $domain)->first();
+                    if (empty($configuration)) {
+                        $this->createAllWebhooks($request);
+                        $new_config = new Configuration();
+                        $new_config->shop_url = $domain;
+                        $new_config->webhook_status = true;
+                        if ($new_config->save()) {
+                            return redirect()->route('configuration' , array_merge($request->input(), ['request' => $request , 'shop' => $domain]) );
+                        }
+                    } else {
+                        if ($configuration['webhook_status'] == 0) {
+                            $this->Create_allWebHooks($request);
+                            $edit_config = Configuration::where('shop_url',  $domain)->first();
+                            $edit_config->webhook_status = 1;
+                            if ($edit_config->update()) {
+                                return redirect()->route('configuration' , array_merge($request->input(), ['request' => $request , 'shop' => $domain]));
+                            }
+                        }
+                    }
+                }
+                return redirect('/configuration');
+            }
+            catch(Exception $e){
+                return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+            }
+        }
+    
+        public function getAllWebhooks(Request $request)
+        {
+            try{
+                $shop = Auth::user();
+                $webhook_result = $shop->api()->rest('GET', '/admin/api/'. env('SHOPIFY_API_VERSION') .'/webhooks.json', array() );
+                echo '<pre>';
+                print_r( ($webhook_result['body']['container']['webhooks']) );
+                echo '</pre>';
+            } catch(Exception $e){
+                return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+            }
+        }
+    }
      ```
 
 ### Using REST API's Link  ```  https://github.com/gnikyt/laravel-shopify/wiki/Usage#accessing-api-for-the-current-shop  ```
@@ -351,7 +450,7 @@ Shopify App Creation Guide
           }
   ```
 
-- 23 :  php artisan make:seeder PlanSeeder  ------->    php artisan db:seed
+- 23 :  php artisan make:seeder PlanSeeder  ------->    php artisan db:seed  ,  php artisan db:seed --class=PlanSeeder
 
 - 24 :  php artisan make:middleware CustomBillable
 
@@ -857,7 +956,7 @@ namespace App\Http\Middleware;
 
    ```
  
- -add plans seeder in DatabaseSeeder.php
+ -add plans seeder in DatabaseSeeder.php 
  ```
      <?php
 
@@ -902,7 +1001,10 @@ namespace App\Http\Middleware;
            $Plan->save();
         }
     }
+
 ```
+ php artisan db:seed --class=PlanSeeder
+
  Route::get('/p1/plans-seeders', function () {
      Artisan::call('db:seed --class=PlanSeeder');
      return "Seeder Creation has been done.";
@@ -938,41 +1040,40 @@ SHOPIFY_BILLING_ENABLED=1
 ### Free Plan Active function
    ```
       public function freePlan( Request $request, IShopCommand $shopCommand , IShopQuery $shopQuery, CancelCurrentPlan $cancelCurrentPlanAction ){
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Origin: *.myshopify.com');
-        header('Content-Security-Policy: frame-ancestors *');
-
-
-        ///////////////////////////////////////////////////
-        $shop = Auth::user();
-        $cancelRecurring_application_charges = DB::table('charges')->where('user_id' , $shop->id)->where('status' , "ACTIVE")->where('plan_id', $shop->plan_id)->first();
-        if( $cancelRecurring_application_charges ){
-            $charge_canceled = $shop->api()->rest('DELETE', "/admin/api/". env('SHOPIFY_API_VERSION') ."/recurring_application_charges/". $cancelRecurring_application_charges->charge_id .".json", array());
-            $get_charge_data = $shop->api()->rest('PUT', "/admin/api/". env('SHOPIFY_API_VERSION') ."/recurring_application_charges/". $cancelRecurring_application_charges->charge_id ."/customize.json", array(
-                "recurring_application_charge" => [
-                    'status' => "cancelled"
-                ]
-            ));
-            DB::table('charges')->where([ 'user_id' => auth()->user()->id, 'status' => "ACTIVE"] )->update(
-                array(
-                    'cancelled_on' => date('Y-m-d 00:00:00'),
-                    'expires_on' => date('Y-m-d 00:00:00'),
-                    'trial_days' => 0,
-                    'status' => "CANCELLED"
-                )
-            );
-            User::where('id' , auth()->user()->id )->update([
-                'plan_id' => NULL,
-                'shopify_freemium' => 1
-            ]);
-        }else{
-            User::where('id' , auth()->user()->id )->update([
-                'plan_id' => NULL,
-                'shopify_freemium' => 1
-            ]);
+        try{
+            $shop = Auth::user();
+            $cancelRecurring_application_charges = DB::table('charges')->where('user_id' , $shop->id)->where('status' , "ACTIVE")->where('plan_id', $shop->plan_id)->first();
+            if( $cancelRecurring_application_charges ){
+                $charge_canceled = $shop->api()->rest('DELETE', "/admin/api/". env('SHOPIFY_API_VERSION') ."/recurring_application_charges/". $cancelRecurring_application_charges->charge_id .".json", array());
+                $get_charge_data = $shop->api()->rest('PUT', "/admin/api/". env('SHOPIFY_API_VERSION') ."/recurring_application_charges/". $cancelRecurring_application_charges->charge_id ."/customize.json", array(
+                    "recurring_application_charge" => [
+                        'status' => "cancelled"
+                    ]
+                ));
+                DB::table('charges')->where([ 'user_id' => auth()->user()->id, 'status' => "ACTIVE"] )->update(
+                    array(
+                        'cancelled_on' => date('Y-m-d 00:00:00'),
+                        'expires_on' => date('Y-m-d 00:00:00'),
+                        'trial_days' => 0,
+                        'status' => "CANCELLED"
+                    )
+                );
+                User::where('id' , auth()->user()->id )->update([
+                    'plan_id' => NULL,
+                    'shopify_freemium' => 1
+                ]);
+            }else{
+                User::where('id' , auth()->user()->id )->update([
+                    'plan_id' => NULL,
+                    'shopify_freemium' => 1
+                ]);
+            }
+            return redirect()->route('home', array_merge($request->input(), ['request' => $request, 'shop' => $shop->name]) );
+            // return $this->index($request);
         }
-        return redirect()->route('home', array_merge($request->input(), ['request' => $request, 'shop' => $shop->name]) );
-        // return $this->index($request);
+        catch(Exception $e){
+            return dd( "\nMESSAGE :: ". $e->getMessage() ."\nCODE :: ". $e->getCode() ."\nLINE :: ". $e->getLine()  );
+        }
     }
    ```
 
